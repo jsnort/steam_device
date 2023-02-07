@@ -647,6 +647,15 @@ void main(void)
 	while (true) {
 		module_get_next_msg(&self, &msg);
 
+		// JDS
+		static int64_t lastUpdateTimestamp = 0;
+		int64_t currentUpdateTimestamp = (k_uptime_get() + 5000); // add 5000 so it will print out right away
+		if ( (currentUpdateTimestamp - lastUpdateTimestamp) > 1000 ) 
+		{
+			lastUpdateTimestamp = currentUpdateTimestamp;
+			printk("\n\nlastUpdateTimestamp %lld\n\n", lastUpdateTimestamp);
+		}
+
 		switch (state) {
 		case STATE_INIT:
 			on_state_init(&msg);

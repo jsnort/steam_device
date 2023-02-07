@@ -124,12 +124,16 @@ static int send_service_info(void)
 	};
 	struct nrf_cloud_svc_info_ui ui_info = {
 		.gps = true,
-#if defined(CONFIG_BOARD_THINGY91_NRF9160_NS)
+// JDS #if defined(CONFIG_BOARD_THINGY91_NRF9160_NS)
 		.humidity = true,
 		.air_pressure = true,
 		.air_quality = true,
 		.temperature = true,
-#endif
+//#endif
+// JDS note from https://developer.nordicsemi.com/nRF_Connect_SDK/doc/latest/nrf/libraries/networking/nrf_cloud.html#lib-nrf-cloud
+		//.flip = true,
+		//.light_sensor = true,
+// end note
 		.rsrp = true,
 		.button = true
 	};

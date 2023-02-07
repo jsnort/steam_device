@@ -286,13 +286,31 @@ static void environmental_data_get(void)
 	 * responses from the different modules within a certain amounf of time
 	 * after the APP_EVT_DATA_GET event has been emitted.
 	 */
-	LOG_DBG("No external sensors, submitting dummy sensor data");
+//	LOG_DBG("No external sensors, submitting dummy sensor data");
 
 	/* Set this entry to false signifying that the event carries no data.
 	 * This makes sure that the entry is not stored in the circular buffer.
 	 */
 	sensor_module_event = new_sensor_module_event();
 	sensor_module_event->type = SENSOR_EVT_ENVIRONMENTAL_NOT_SUPPORTED;
+// JDS 2023_2_6 use the aditional nRF Cloud cards for our data
+	static double fudge = 0;
+	fudge += 1.8;
+	if (fudge > 20)
+	{
+		fudge -= 19.7;
+	}
+	static int fudgecounter = 0;
+	sensor_module_event->data.sensors.timestamp = k_uptime_get();
+	sensor_module_event->data.sensors.temperature = (fudge + 30.0) ;
+	fudge += 1.8;
+	sensor_module_event->data.sensors.humidity = (fudge + 50.0) ;
+	fudge += 1.8;
+	sensor_module_event->data.sensors.pressure = ((fudge * 10) + 200.0) ;
+	fudge += 1.8;
+	sensor_module_event->data.sensors.bsec_air_quality = fudgecounter++ ;
+	sensor_module_event->type = SENSOR_EVT_ENVIRONMENTAL_DATA_READY; // overwrite SENSOR_EVT_ENVIRONMENTAL_NOT_SUPPORTED;
+// JDS
 #endif
 	APP_EVENT_SUBMIT(sensor_module_event);
 }
