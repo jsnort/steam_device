@@ -39,6 +39,11 @@
 
 LOG_MODULE_REGISTER(MODULE, CONFIG_APPLICATION_MODULE_LOG_LEVEL);
 
+// JDS added for I2C coms
+//#include <zephyr/drivers/i2c.h>
+//#define  DT_NODELABEL(mysensor)
+//
+
 /* Message structure. Events from other modules are converted to messages
  * in the Application Event Manager handler, and then queued up in the message queue
  * for processing in the main thread.
@@ -306,7 +311,18 @@ static bool app_event_handler(const struct app_event_header *aeh)
 
 	if (is_sensor_module_event(aeh)) {
 		struct sensor_module_event *evt = cast_sensor_module_event(aeh);
-
+// JDS
+		static int64_t lastUpdateTimestamp = 0;
+		static int64_t sensorRunCount = 0;
+		sensorRunCount++;
+		int64_t currentUpdateTimestamp = k_uptime_get();
+		if ( (currentUpdateTimestamp - lastUpdateTimestamp) > 1000 ) 
+		{
+			printk("\n\nts, %lld , sensorRunCount, %lld\n\n\n", currentUpdateTimestamp, sensorRunCount);
+			lastUpdateTimestamp = currentUpdateTimestamp;
+			sensorRunCount = 0;
+		}
+//
 		msg.module.sensor = *evt;
 		enqueue_msg = true;
 	}
@@ -647,14 +663,18 @@ void main(void)
 	while (true) {
 		module_get_next_msg(&self, &msg);
 
-		// JDS
+// JDS
 		static int64_t lastUpdateTimestamp = 0;
-		int64_t currentUpdateTimestamp = (k_uptime_get() + 5000); // add 5000 so it will print out right away
+		static int64_t mainRunCount = 0;
+		mainRunCount++;
+		int64_t currentUpdateTimestamp = k_uptime_get();
 		if ( (currentUpdateTimestamp - lastUpdateTimestamp) > 1000 ) 
 		{
+			printk("\n\nts, %lld , mainRunCount, %lld\n\n\n", currentUpdateTimestamp, mainRunCount);
 			lastUpdateTimestamp = currentUpdateTimestamp;
-			printk("\n\nlastUpdateTimestamp %lld\n\n", lastUpdateTimestamp);
+			mainRunCount = 0;
 		}
+//
 
 		switch (state) {
 		case STATE_INIT:

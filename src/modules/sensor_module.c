@@ -310,7 +310,7 @@ static void environmental_data_get(void)
 	fudge += 1.8;
 	sensor_module_event->data.sensors.bsec_air_quality = fudgecounter++ ;
 	sensor_module_event->type = SENSOR_EVT_ENVIRONMENTAL_DATA_READY; // overwrite SENSOR_EVT_ENVIRONMENTAL_NOT_SUPPORTED;
-// JDS
+//
 #endif
 	APP_EVENT_SUBMIT(sensor_module_event);
 }
